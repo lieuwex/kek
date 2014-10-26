@@ -18,7 +18,7 @@ kek bot object:
 - `commands`: `Dictionary (key: type, value: command)`
 
 Full structure of a kek module:
-- `COMMANDS`: `{ command: RegExp, method: String }[]` Method is a name of a function in this kek module.
+- `COMMANDS`: `{ command: RegExp, method: String, when: String[] }[]` `method` is a name of a function in this kek module. `when` is an Array containing Strings that indicate where this method can be called. If this is null the method will be able to be called everywhere.
 - `constructor`: (`bot`)
 	- `bot`: `The kek bot` 
 - `<methodName>`: (`bot`, `out`, `public`, `command`, `params`)
