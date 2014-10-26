@@ -1,0 +1,23 @@
+{
+	"commandPrefix": ".",
+	"publicPrefix": "@",
+	"privatePrefix": "!",
+	"servers": [
+		{
+			"url": "irc.XXXX.org",
+			"port": null,
+			"channels": [  ],
+			"username": "kek",
+			"password": "XXX",
+			"loginManager": "NickServ",
+			"loginCommand": "/msg NickServ identify <! password>",
+			"removeModules": [],
+			"extraModules": [],
+			"autoReconnect": true,
+			"realName": "XXXXX"
+		}
+	],
+	"modules": [
+		
+	]
+}
