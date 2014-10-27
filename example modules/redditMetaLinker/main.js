@@ -9,13 +9,13 @@
 
     redditMetaLinker.COMMANDS = [
       {
-        command: /(\/|\\)?r(\/|\\)[^\/\\\s]+/ig,
+        rawCommand: /(\/|\\)?r(\/|\\)[^\/\\\s]+/ig,
         when: null,
         method: "link"
       }
     ];
 
-    redditMetaLinker.prototype.link = function(bot, out, isPublic, command, params, message) {
+    redditMetaLinker.prototype.link = function(bot, out, isPublic, from, to, command, params, message) {
       var query, val;
       val = /(\/|\\)?r(\/|\\)[^\/\\\s]+/ig.exec(message);
       query = val[0];

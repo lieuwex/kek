@@ -3,13 +3,13 @@ request = require 'request'
 class redditMetaLinker
 	@COMMANDS: [
 		{
-			command: /(\/|\\)?r(\/|\\)[^\/\\\s]+/ig
+			rawCommand: /(\/|\\)?r(\/|\\)[^\/\\\s]+/ig
 			when: null
 			method: "link"
 		}
 	]
 
-	link: (bot, out, isPublic, command, params, message) ->
+	link: (bot, out, isPublic, from, to, command, params, message) ->
 		val = /(\/|\\)?r(\/|\\)[^\/\\\s]+/ig.exec message
 		query = val[0]
 		if query[0] is "/" then query = query[1..]

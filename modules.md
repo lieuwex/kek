@@ -9,6 +9,7 @@ You can configure kek using kek.json. (Hopefully also soon for modules.)
 
 kek bot object:
 - `VERISON`: `String`
+- `store`: `function(key, [value])`
 - `clients`: `IRC-client`
 - `modules`: `Module[]`
 - `commands`: `{ command: RegExp, method: Function }[]`
@@ -18,13 +19,23 @@ kek bot object:
 - `commands`: `Dictionary (key: type, value: command)`
 
 Full structure of a kek module:
+<<<<<<< HEAD
+<<<<<<< HEAD
+- `COMMANDS`: `{ rawCommand|command: RegExp, method: String }[]` Method is a name of a function in this kek module.
+=======
 - `COMMANDS`: `{ command: RegExp, method: String, when: String[] }[]` `method` is a name of a function in this kek module. `when` is an Array containing Strings that indicate where this method can be called. If this is null the method will be able to be called everywhere.
+>>>>>>> FETCH_HEAD
+=======
+- `COMMANDS`: `{ command: RegExp, method: String, when: String[] }[]` `method` is a name of a function in this kek module. `when` is an Array containing Strings that indicate where this method can be called. If this is null the method will be able to be called everywhere.
+>>>>>>> FETCH_HEAD
 - `constructor`: (`bot`)
 	- `bot`: `The kek bot` 
-- `<methodName>`: (`bot`, `out`, `public`, `command`, `params`)
+- `<methodName>`: (`bot`, `out`, `isPublic`, `from`, `to`, `command`, `params`, `message`)
 	- `bot`: `The kek bot`
 	- `out`: `function(string)`
-	- `public`: `Boolean`
+	- `isPublic`: `Boolean`
+	- `from`: `String`
+	- `to`: `String`
 	- `command`: `String`
 	- `params`: `String[]`
 	- `message`: `String`

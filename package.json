@@ -1,6 +1,6 @@
 {
   "name": "kek",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A tiny modular IRC bot for Node.js",
   "main": "index.js",
   "scripts": {
@@ -9,8 +9,10 @@
   "author": "Lieuwe Rooijakkers <lieuwerooijakkers@gmail.com> (http://lieuwex.github.io/)",
   "license": "GPLv3",
   "dependencies": {
+    "dwarfcraftInsulter": "^1.0.0",
     "irc": "^0.3.7",
     "lodash": "^2.4.1",
+    "node-persist": "0.0.2",
     "redditmetalinker": "^1.0.0"
   }
 }
