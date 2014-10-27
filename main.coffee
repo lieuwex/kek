@@ -50,10 +50,6 @@ for server in settings.servers
 
 	bot.clients.push client
 
-	# setTimeout (->
-	# 	client.say server.loginManager, server.loginCommand.replace "<! password>", "kankerkop24kaas"
-	# ), 1000
-
 	client.on "error", (data) -> bot.emit "error", data
 
 	client.on "pm", (from, message, raw) ->
