@@ -54,32 +54,32 @@ for server in settings.servers
 
 	client.on "pm", (from, message, raw) ->
 		splitted = message.split " "
-		command = splitted[0]
+		givenCommand = splitted[0]
 		params = splitted[1..]
 
 		for command in _.filter(bot.commands["pm"], (c) -> c.command?.test?(message) or c.rawCommand?.test?(message)) then do (command) ->
 			out = (s) -> client.notice from, s
-			command.method bot, out, no, from, server.username, command, params, message
+			command.method bot, out, no, from, server.username, givenCommand, params, message
 
 	client.on "message#", (from, to, message, raw) ->
 		isPublic = message.toLowerCase().substring(bot.commandPrefix.length, bot.commandPrefix.length + bot.privatePrefix.length) isnt bot.privatePrefix
 		prefixLength = if isPublic then (bot.commandPrefix.length + bot.publicPrefix.length) else (bot.commandPrefix.length + bot.privatePrefix.length)
-		splitted = message[prefixLength..]
-		command = splitted[0]
+		splitted = message[prefixLength..].split " "
+		givenCommand = splitted[0]
 		params = splitted[1..]
 
 		for command in _.filter(bot.commands["message"], (c) -> c.command?.test?(message[prefixLength..]) or c.rawCommand?.test?(message)) then do (command) ->
 			out = (s) -> if isPublic then client.say(to, s) else client.notice(from, s)
-			command.method bot, out, isPublic, from, to, command, params, message
+			command.method bot, out, isPublic, from, to, givenCommand, params, message
 
 	for customCommand in _.filter(_.keys(bot.commands), (s) -> s.toLowerCase().indexOf("message#") is 0)
 		client.on customCommand, (from, to, message, raw) ->
 			isPublic = message.toLowerCase().substring(bot.commandPrefix.length, bot.commandPrefix.length + bot.privatePrefix.length) isnt bot.privatePrefix
 			prefixLength = if isPublic then (bot.commandPrefix.length + bot.publicPrefix.length) else (bot.commandPrefix.length + bot.privatePrefix.length)
-			splitted = message[prefixLength..]
-			command = splitted[0]
+			splitted = message[prefixLength..].split " "
+			givenCommand = splitted[0]
 			params = splitted[1..]
 
 			for command in _.filter(bot.commands[customCommand], (c) -> c.command?.test?(message[prefixLength..]) or c.rawCommand?.test?(message)) then do (command) ->
 				out = (s) -> if isPublic then client.say(to, s) else client.notice(from, s)
-				command.method bot, out, isPublic, from, to, command, params, message
+				command.method bot, out, isPublic, from, to, givenCommand, params, message
