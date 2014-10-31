@@ -1,0 +1,21 @@
+{
+  "name": "web",
+  "version": "1.0.0",
+  "description": "Web interface to kek.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "name": "Lieuwe Rooijakkers"
+  },
+  "license": "GPLv3",
+  "dependencies": {
+    "express": "^4.10.1",
+    "lodash": "^2.4.1"
+  },
+  "readme": "ERROR: No README data found!",
+  "_id": "web@1.0.0",
+  "_shasum": "7d127fb15965f0f1e90254a8b90c5d6fc7937415",
+  "_from": "web/"
+}
