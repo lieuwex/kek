@@ -60,10 +60,11 @@ for server in settings.servers
 
 	client.on "pm", (from, message, raw) ->
 		splitted = message.split " "
-		givenCommand = splitted[0]
-		params = splitted[1..]
 
 		for command in _.filter(bot.commands["pm"], (c) -> c.command?.test?(message) or c.rawCommand?.test?(message)) then do (command) ->
+			givenCommand = command.command?.exec?(message)?[0] ? command.rawCommand?.exec?(message)?[0]
+			givenCommandLength = if (val = givenCommand.split(" ").length) < 1 then 1 else val
+			params = splitted[givenCommandLength..]
 			out = (s) -> client.notice from, s
 			try
 				command.method _.extend(bot, currentClient: client), out, no, from, server.username, givenCommand, params, message
@@ -76,10 +77,11 @@ for server in settings.servers
 		isPublic = message.toLowerCase().substring(bot.commandPrefix.length, bot.commandPrefix.length + bot.privatePrefix.length) isnt bot.privatePrefix
 		prefixLength = if isPublic then (bot.commandPrefix.length + bot.publicPrefix.length) else (bot.commandPrefix.length + bot.privatePrefix.length)
 		splitted = message[prefixLength..].split " "
-		givenCommand = splitted[0]
-		params = splitted[1..]
 
 		for command in _.filter(bot.commands["message"], (c) -> c.command?.test?(message[prefixLength..]) or c.rawCommand?.test?(message)) then do (command) ->
+			givenCommand = command.command?.exec?(message[prefixLength..])?[0] ? command.rawCommand?.exec?(message)?[0]
+			givenCommandLength = if (val = givenCommand.split(" ").length) < 1 then 1 else val
+			params = splitted[givenCommandLength..]
 			out = (s) -> if isPublic then client.say(to, s) else client.notice(from, s)
 			try
 				command.method _.extend(bot, currentClient: client), out, isPublic, from, to, givenCommand, params, message
@@ -93,10 +95,11 @@ for server in settings.servers
 			isPublic = message.toLowerCase().substring(bot.commandPrefix.length, bot.commandPrefix.length + bot.privatePrefix.length) isnt bot.privatePrefix
 			prefixLength = if isPublic then (bot.commandPrefix.length + bot.publicPrefix.length) else (bot.commandPrefix.length + bot.privatePrefix.length)
 			splitted = message[prefixLength..].split " "
-			givenCommand = splitted[0]
-			params = splitted[1..]
 
 			for command in _.filter(bot.commands[customCommand], (c) -> c.command?.test?(message[prefixLength..]) or c.rawCommand?.test?(message)) then do (command) ->
+				givenCommand = command.command?.exec?(message[prefixLength..])?[0] ? command.rawCommand?.exec?(message)?[0]
+				givenCommandLength = if (val = givenCommand.split(" ").length) < 1 then 1 else val
+				params = splitted[givenCommandLength..]
 				out = (s) -> if isPublic then client.say(to, s) else client.notice(from, s)
 				try
 					command.method _.extend(bot, currentClient: client), out, isPublic, from, to, givenCommand, params, message
