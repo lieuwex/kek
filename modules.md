@@ -10,7 +10,7 @@ You can configure kek using kek.json. (Hopefully also soon for modules.)
 kek bot object:
 - `VERISON`: `String`
 - `store`: `function(key, [value])`
-- `clients`: `IRC-client`
+- `clients`: `IRC-client[]`
 - `modules`: `Module[]`
 - `commands`: `{ command: RegExp, method: Function }[]`
 - `commandPrefix`: `String` (not currently used)
