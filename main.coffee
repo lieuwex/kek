@@ -61,9 +61,14 @@ for server in settings.servers
 	client.on "pm", (from, message, raw) ->
 		splitted = message.split " "
 
-		for command in _.filter(bot.commands["pm"], (c) -> c.command?.test?(message) or c.rawCommand?.test?(message)) then do (command) ->
-			givenCommand = command.command?.exec?(message)?[0] ? command.rawCommand?.exec?(message)?[0]
-			givenCommandLength = if (val = givenCommand.split(" ").length) < 1 then 1 else val
+		for command in _.filter(bot.commands["pm"], (c) -> c.command?.test(message) or c.rawCommand?.test(message)) then do (command) ->
+			givenCommand = command.command?.exec(message)?[0] ? command.rawCommand?.exec(message)?[0]
+
+			givenCommandLength = command.commandLength
+			if givenCommand?
+				givenCommandLength ?= if (val = givenCommand.split(" ").length) < 1 then 1 else val
+			else
+				givenCommandLength ?= 1
 			params = splitted[givenCommandLength..]
 			out = (s) -> client.notice from, s
 			try
@@ -78,9 +83,14 @@ for server in settings.servers
 		prefixLength = if isPublic then (bot.commandPrefix.length + bot.publicPrefix.length) else (bot.commandPrefix.length + bot.privatePrefix.length)
 		splitted = message[prefixLength..].split " "
 
-		for command in _.filter(bot.commands["message"], (c) -> c.command?.test?(message[prefixLength..]) or c.rawCommand?.test?(message)) then do (command) ->
-			givenCommand = command.command?.exec?(message[prefixLength..])?[0] ? command.rawCommand?.exec?(message)?[0]
-			givenCommandLength = if (val = givenCommand.split(" ").length) < 1 then 1 else val
+		for command in _.filter(bot.commands["message"], (c) -> c.command?.test(message[prefixLength..]) or c.rawCommand?.test(message)) then do (command) ->
+			givenCommand = command.command?.exec(message[prefixLength..])?[0] ? command.rawCommand?.exec(message)?[0]
+
+			givenCommandLength = command.commandLength
+			if givenCommand?
+				givenCommandLength ?= if (val = givenCommand.split(" ").length) < 1 then 1 else val
+			else
+				givenCommandLength ?= 1
 			params = splitted[givenCommandLength..]
 			out = (s) -> if isPublic then client.say(to, s) else client.notice(from, s)
 			try
@@ -96,9 +106,14 @@ for server in settings.servers
 			prefixLength = if isPublic then (bot.commandPrefix.length + bot.publicPrefix.length) else (bot.commandPrefix.length + bot.privatePrefix.length)
 			splitted = message[prefixLength..].split " "
 
-			for command in _.filter(bot.commands[customCommand], (c) -> c.command?.test?(message[prefixLength..]) or c.rawCommand?.test?(message)) then do (command) ->
-				givenCommand = command.command?.exec?(message[prefixLength..])?[0] ? command.rawCommand?.exec?(message)?[0]
-				givenCommandLength = if (val = givenCommand.split(" ").length) < 1 then 1 else val
+			for command in _.filter(bot.commands[customCommand], (c) -> c.command?.test(message[prefixLength..]) or c.rawCommand?.test(message)) then do (command) ->
+				givenCommand = command.command?.exec(message[prefixLength..])?[0] ? command.rawCommand?.exec(message)?[0]
+
+				givenCommandLength = command.commandLength
+				if givenCommand?
+					givenCommandLength ?= if (val = givenCommand.split(" ").length) < 1 then 1 else val
+				else
+					givenCommandLength ?= 1
 				params = splitted[givenCommandLength..]
 				out = (s) -> if isPublic then client.say(to, s) else client.notice(from, s)
 				try

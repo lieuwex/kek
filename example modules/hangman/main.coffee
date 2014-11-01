@@ -10,26 +10,31 @@ class hangman
 			command: /^hangman join/i
 			when: [ "public" ]
 			method: "join"
+			commandLength: 2
 		}
 		{
 			command: /^hangman guess \S+$/i
 			when: [ "public" ]
 			method: "guess"
+			commandLength: 2
 		}
 		{
 			command: /^hangman (rage)?quit/i
 			when: [ "public" ]
 			method: "leave"
+			commandLength: 2
 		}
 		{
 			command: /^hangman ((skip( ?turn)?)|(next))/i
 			when: [ "public" ]
 			method: "skip"
+			commandLength: null
 		}
 		{
 			command: /^hangman (board|info|stat(e|us))$/i
 			when: [ "public" ]
 			method: "info"
+			commandLength: 2
 		}
 	]
 
@@ -101,7 +106,7 @@ class hangman
 							if _.contains lobby.word.toUpperCase(), guess
 								bot.currentClient.say to, "yup."
 								bot.currentClient.say to, lobby.filteredWord()
-								bot.currentClient.say to, "| " + lobby.guesses.join " "
+								bot.currentClient.say to, "> " + lobby.guesses.join " "
 
 								if _.filter(lobby.guesses, (g) -> _.contains(lobby.word, g)).length is lobby.word.length
 									bot.currentClient.say to, "#{from} guessed the right word: #{lobby.word}!"
@@ -126,7 +131,7 @@ class hangman
 								else
 									bot.currentClient.say to, "nope. #{player.triesLeft} #{if player.triesLeft is 1 then "try" else "tries"} left."
 								bot.currentClient.say to, lobby.filteredWord()
-								bot.currentClient.say to, "| " + lobby.guesses.join " "
+								bot.currentClient.say to, "> " + lobby.guesses.join " "
 
 							lobby?.nextTurn?()
 
@@ -154,7 +159,7 @@ class hangman
 					else
 						bot.currentClient.say to, "nope. #{player.triesLeft} #{if player.triesLeft is 1 then "try" else "tries"} left."
 					bot.currentClient.say to, lobby.filteredWord()
-					bot.currentClient.say to, "| " + lobby.guesses.join " "
+					bot.currentClient.say to, "> " + lobby.guesses.join " "
 			else
 				bot.currentClient.say from, "You haven't joined #{if lobby.started then "this" else "a"} game" + (if lobby.started then "" else ", to join use @hangman join")
 		else
@@ -185,9 +190,12 @@ class hangman
 
 	info: (bot, out, isPublic, from, to, command, params, message) ->
 		if (lobby = hangman.lobbys[to])?
-			bot.currentClient.say to, lobby.filteredWord()
-			bot.currentClient.say to, "| " + lobby.guesses.join " "
-			bot.currentClient.say to, "#{lobby.onMove().name} is on move."
+			if lobby.started
+				bot.currentClient.say to, lobby.filteredWord()
+				bot.currentClient.say to, "> " + lobby.guesses.join " "
+				bot.currentClient.say to, "#{lobby.onMove().name} is on move."
+			else
+				bot.currentClient.say to, "Game hasn't started yet."
 		else
 			bot.currentClient.say to, "No game in progress, use @hangman join to create and join a new hangman game."
 

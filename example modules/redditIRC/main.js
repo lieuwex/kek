@@ -13,7 +13,8 @@
       {
         command: /^reddit/ig,
         when: null,
-        method: "give"
+        method: "give",
+        commandLength: 1
       }
     ];
 

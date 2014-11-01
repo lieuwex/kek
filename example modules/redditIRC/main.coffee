@@ -7,6 +7,7 @@ class redditIRC
 			command: /^reddit/ig
 			when: null
 			method: "give"
+			commandLength: 1
 		}
 	]
 

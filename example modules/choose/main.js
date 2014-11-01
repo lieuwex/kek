@@ -10,14 +10,20 @@
     choose.COMMANDS = [
       {
         command: /^choose/ig,
-        when: ["public"],
-        method: "choose"
+        when: null,
+        method: "choose",
+        commandLength: 1
       }
     ];
 
     choose.prototype.choose = function(bot, out, isPublic, from, to, command, params, message) {
       var choices, param;
-      [].push.apply(params, params[0].split(","));
+      if (params.length === 0 || (params.length === 1 && _.isEmpty(params[0].trim()))) {
+        return;
+      }
+      if (message.indexOf(",") !== -1) {
+        params = message.split(" ").slice(1).join(" ").split(",");
+      }
       choices = (function() {
         var _i, _len, _results;
         _results = [];

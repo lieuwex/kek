@@ -17,23 +17,28 @@
       {
         command: /^hangman join/i,
         when: ["public"],
-        method: "join"
+        method: "join",
+        commandLength: 2
       }, {
         command: /^hangman guess \S+$/i,
         when: ["public"],
-        method: "guess"
+        method: "guess",
+        commandLength: 2
       }, {
         command: /^hangman (rage)?quit/i,
         when: ["public"],
-        method: "leave"
+        method: "leave",
+        commandLength: 2
       }, {
         command: /^hangman ((skip( ?turn)?)|(next))/i,
         when: ["public"],
-        method: "skip"
+        method: "skip",
+        commandLength: null
       }, {
         command: /^hangman (board|info|stat(e|us))$/i,
         when: ["public"],
-        method: "info"
+        method: "info",
+        commandLength: 2
       }
     ];
 
@@ -132,7 +137,7 @@
                 if (_.contains(lobby.word.toUpperCase(), guess)) {
                   bot.currentClient.say(to, "yup.");
                   bot.currentClient.say(to, lobby.filteredWord());
-                  bot.currentClient.say(to, "| " + lobby.guesses.join(" "));
+                  bot.currentClient.say(to, "> " + lobby.guesses.join(" "));
                   if (_.filter(lobby.guesses, function(g) {
                     return _.contains(lobby.word, g);
                   }).length === lobby.word.length) {
@@ -167,7 +172,7 @@
                     bot.currentClient.say(to, "nope. " + player.triesLeft + " " + (player.triesLeft === 1 ? "try" : "tries") + " left.");
                   }
                   bot.currentClient.say(to, lobby.filteredWord());
-                  bot.currentClient.say(to, "| " + lobby.guesses.join(" "));
+                  bot.currentClient.say(to, "> " + lobby.guesses.join(" "));
                 }
                 return lobby != null ? typeof lobby.nextTurn === "function" ? lobby.nextTurn() : void 0 : void 0;
               }
@@ -202,7 +207,7 @@
               bot.currentClient.say(to, "nope. " + player.triesLeft + " " + (player.triesLeft === 1 ? "try" : "tries") + " left.");
             }
             bot.currentClient.say(to, lobby.filteredWord());
-            return bot.currentClient.say(to, "| " + lobby.guesses.join(" "));
+            return bot.currentClient.say(to, "> " + lobby.guesses.join(" "));
           }
         } else {
           return bot.currentClient.say(from, ("You haven't joined " + (lobby.started ? "this" : "a") + " game") + (lobby.started ? "" : ", to join use @hangman join"));
@@ -252,9 +257,13 @@
     hangman.prototype.info = function(bot, out, isPublic, from, to, command, params, message) {
       var lobby;
       if ((lobby = hangman.lobbys[to]) != null) {
-        bot.currentClient.say(to, lobby.filteredWord());
-        bot.currentClient.say(to, "| " + lobby.guesses.join(" "));
-        return bot.currentClient.say(to, "" + (lobby.onMove().name) + " is on move.");
+        if (lobby.started) {
+          bot.currentClient.say(to, lobby.filteredWord());
+          bot.currentClient.say(to, "> " + lobby.guesses.join(" "));
+          return bot.currentClient.say(to, "" + (lobby.onMove().name) + " is on move.");
+        } else {
+          return bot.currentClient.say(to, "Game hasn't started yet.");
+        }
       } else {
         return bot.currentClient.say(to, "No game in progress, use @hangman join to create and join a new hangman game.");
       }

@@ -9,6 +9,7 @@ class web
 			command: /^(broadcast|tellall) \S+/i
 			when: null
 			method: "broadcast"
+			commandLength: 1
 		}
 	]
 

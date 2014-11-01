@@ -14,7 +14,8 @@
       {
         command: /^(broadcast|tellall) \S+/i,
         when: null,
-        method: "broadcast"
+        method: "broadcast",
+        commandLength: 1
       }
     ];
 

@@ -3,7 +3,7 @@ request = require 'request'
 class redditMetaLinker
 	@COMMANDS: [
 		{
-			rawCommand: /(\/|\\)?r(\/|\\)[^\/\\\s]+/ig
+			rawCommand: /\b(\/|\\)?r(\/|\\)[^\/\\\s]+/ig
 			when: null
 			method: "link"
 		}
