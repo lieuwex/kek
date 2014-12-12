@@ -9,16 +9,15 @@
 
     redditMetaLinker.COMMANDS = [
       {
-        rawCommand: /\b(\/|\\)?r(\/|\\)[^\/\\\s]+/ig,
+        rawCommand: /(^|\s)[\/\\]?r[\\\/][^\\\/\W]+/i,
         when: null,
         method: "link"
       }
     ];
 
     redditMetaLinker.prototype.link = function(bot, out, isPublic, from, to, command, params, message) {
-      var query, val;
-      val = /(\/|\\)?r(\/|\\)[^\/\\\s]+/ig.exec(message);
-      query = val[0];
+      var query;
+      query = /(^|\s)[\/\\]?r[\\\/][^\\\/\W]+/i.exec(message)[0].trim();
       if (query[0] === "/") {
         query = query.slice(1);
       }
@@ -30,7 +29,7 @@
         }
         data = parsed.data;
         s = "";
-        s += data.over18 ? "NSFW " : "";
+        s += data.over18 ? "\x0304NSFW \x03" : "";
         s += "" + data.display_name + ": http://www.reddit.com" + data.url;
         return out(s);
       });

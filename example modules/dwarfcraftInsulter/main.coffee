@@ -10,7 +10,7 @@ insults = [
 class dwarfcraftInsulter
 	@COMMANDS: [
 		{
-			rawCommand: /\b(u|e)*h+m+/ig
+			rawCommand: /\b[ue]*h+m+/ig
 			when: [ "public" ]
 			method: "insult"
 		}

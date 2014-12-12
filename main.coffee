@@ -6,6 +6,7 @@ _ = require "lodash"
 storage.initSync()
 
 process.on "uncaughtException", (e) -> console.log "-- Unresolved Error: #{e.message} --"
+log = console.log
 
 bot =
 	VERSION: "0.0.4"
@@ -79,6 +80,7 @@ for server in settings.servers
 				out = (s) -> client.notice from, s
 				_.defer ->
 					try
+						console.log = (s) -> log "#{command.moduleName}: #{s}" if _.isString(s) and not _.isEmpty(s)
 						command.method _.extend(bot, currentClient: client), out, no, from, server.username, givenCommand, params, message, "pm"
 					catch e
 						out "-- Module #{command.moduleName} crashed: #{e.message} --"
@@ -104,6 +106,7 @@ for server in settings.servers
 				out = (s) -> if isPublic then client.say(to, s) else client.notice(from, s)
 				_.defer ->
 					try
+						console.log = (s) -> log "#{command.moduleName}: #{s}" if _.isString(s) and not _.isEmpty(s)
 						command.method _.extend(bot, currentClient: client), out, isPublic, from, to, givenCommand, params, message, "message"
 					catch e
 						out "-- Module #{command.moduleName} crashed: #{e.message} --"
@@ -130,6 +133,7 @@ for server in settings.servers
 					out = (s) -> if isPublic then client.say(to, s) else client.notice(from, s)
 					_.defer ->
 						try
+							console.log = (s) -> log "#{command.moduleName}: #{s}" if _.isString(s) and not _.isEmpty(s)
 							command.method _.extend(bot, currentClient: client), out, isPublic, from, to, givenCommand, params, message, customCommand
 						catch e
 							out "-- Module #{command.moduleName} crashed: #{e.message} --"

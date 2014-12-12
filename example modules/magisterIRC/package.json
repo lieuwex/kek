@@ -1,0 +1,26 @@
+{
+  "name": "magisterIRC",
+  "version": "0.5.0",
+  "description": "A quick IRC gateway to Magister.js",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "name": "Lieuwe Rooijakkers",
+    "email": "lieuwerooijakkers@gmail.com",
+    "url": "http://lieuwex.github.io/"
+  },
+  "license": "GPLv3",
+  "dependencies": {
+    "lodash": "^2.4.1",
+    "magister.js": "^1.0.7"
+  },
+  "devDependencies": {
+    "coffee-script": "^1.8.0"
+  },
+  "readme": "ERROR: No README data found!",
+  "_id": "magisterIRC@0.5.0",
+  "_shasum": "5b16e741ffc89ef9569ab22609f0c40856cdab3e",
+  "_from": "./magisterIRC/"
+}

@@ -17,23 +17,33 @@
     ];
 
     choose.prototype.choose = function(bot, out, isPublic, from, to, command, params, message) {
-      var choices, param;
+      var choices, numbers, param;
       if (params.length === 0 || (params.length === 1 && _.isEmpty(params[0].trim()))) {
         return;
       }
       if (message.indexOf(",") !== -1) {
         params = message.split(" ").slice(1).join(" ").split(",");
       }
-      choices = (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = params.length; _i < _len; _i++) {
-          param = params[_i];
-          _results.push(param.trim());
+      if (/\b\d+-\d+/ig.test(message)) {
+        numbers = message.split(" ").slice(1).join(" ").split("-").map(function(x) {
+          return Number(x);
+        });
+        return out(("" + from + ": ") + _.random(numbers[0], numbers[1]));
+      } else {
+        choices = (function() {
+          var _i, _len, _results;
+          _results = [];
+          for (_i = 0, _len = params.length; _i < _len; _i++) {
+            param = params[_i];
+            _results.push(param.trim());
+          }
+          return _results;
+        })();
+        if (choices.length < 2) {
+          return;
         }
-        return _results;
-      })();
-      return out(("" + from + ": ") + choices[_.random(0, choices.length - 1)]);
+        return out(("" + from + ": ") + choices[_.random(0, choices.length - 1)]);
+      }
     };
 
     return choose;

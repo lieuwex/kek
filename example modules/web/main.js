@@ -16,10 +16,21 @@
         when: null,
         method: "broadcast",
         commandLength: 1
+      }, {
+        command: /^kek \S+/i,
+        when: null,
+        method: "info",
+        commandLength: 1
+      }, {
+        command: /^kek reloadmodules/i,
+        when: null,
+        method: "reload",
+        commandLength: 2
       }
     ];
 
     function web(bot) {
+      this.info = __bind(this.info, this);
       this.broadcast = __bind(this.broadcast, this);
       this.tell = function(server, channel, message) {
         var client, _i, _len, _ref, _results;
@@ -57,9 +68,10 @@
           return _results;
         }
       };
-      app.get("/", function(req, res) {
+      this.info = function() {
         var x;
-        return res.send(JSON.stringify({
+        return {
+          version: bot.VERSION,
           servers: (function() {
             var _i, _len, _ref, _results;
             _ref = bot.clients;
@@ -76,8 +88,13 @@
             return _results;
           })(),
           modules: _.keys(bot.modules)
-        }));
-      });
+        };
+      };
+      app.get("/", (function(_this) {
+        return function(req, res) {
+          return res.send(JSON.stringify(_this.info()));
+        };
+      })(this));
       app.post("/tell", (function(_this) {
         return function(req, res) {
           var data;
@@ -117,17 +134,23 @@
           });
         };
       })(this));
+      app.post("/exit", function() {
+        return process.exit();
+      });
       this.server = app.listen(1337, function() {
         return console.log("Module web is loaded at port 1337.");
       });
     }
 
     web.prototype.destruct = function(code) {
-      return server.close();
+      return this.server.close();
     };
 
     web.prototype.broadcast = function(bot, out, isPublic, from, to, command, params, message) {
       var channel, inString, param, server, singleParams, _i, _len, _params;
+      if (from !== "Lieuwex") {
+        return;
+      }
       _params = [];
       singleParams = [];
       inString = false;
@@ -163,6 +186,13 @@
         message = params.join(" ");
       }
       return this.tell(server, channel, message);
+    };
+
+    web.prototype.info = function(bot, out, isPublic, from, to, command, params, message) {
+      switch (params[0].toLowerCase()) {
+        case "info":
+          return out(JSON.stringify(this.info()));
+      }
     };
 
     return web;

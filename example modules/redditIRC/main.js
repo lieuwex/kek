@@ -19,19 +19,13 @@
     ];
 
     redditIRC.prototype.give = function(bot, out, isPublic, from, to, command, params, message) {
-      var username;
       if (params.length !== 1) {
         return;
       }
-      username = params[0];
-      return request("http://www.reddit.com/user/" + username + "/about.json", function(req, data, res) {
+      return request("http://www.reddit.com/user/" + params[0] + "/about.json", function(req, data, res) {
         try {
           data = JSON.parse(res).data;
-          if (isPublic) {
-            return out("Name: " + data.name + " | Signup: " + (moment(data.created * 1000).fromNow()) + " | LinkKarma: " + data.link_karma + " |  CommentKarma: " + data.comment_karma + " | Has gold: " + (data.is_gold ? "yup!" : "nope"));
-          } else {
-            return out("Name: " + data.name + " | Signup: " + (moment(data.created * 1000).fromNow()) + " | LinkKarma: " + data.link_karma + " |  CommentKarma: " + data.comment_karma + " | Has gold: " + (data.is_gold ? "yup!" : "nope"));
-          }
+          return out("Name: " + data.name + " | Signup: " + (moment(data.created * 1000).fromNow()) + " | LinkKarma: " + data.link_karma + " |  CommentKarma: " + data.comment_karma + " | Has gold: " + (data.is_gold ? "yup!" : "nope"));
         } catch (_error) {
           return out("Whoops! That didn't go right!");
         }

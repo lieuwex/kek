@@ -13,6 +13,18 @@ class hangman
 			commandLength: 2
 		}
 		{
+			command: /^hangman join/i
+			when: [ "pm" ]
+			method: "acceptInvite"
+			commandLength: 2
+		}
+		{
+			command: /^hangman invite \S+$/i
+			when: [ "public" ]
+			method: "invite"
+			commandLength: 2
+		}
+		{
 			command: /^hangman guess \S+$/i
 			when: [ "public" ]
 			method: "guess"
@@ -36,11 +48,18 @@ class hangman
 			method: "info"
 			commandLength: 2
 		}
+		{
+			command: /^hangman kick \S+$/i
+			when: [ "public" ]
+			method: "kick"
+			commandLength: 2
+		}
 	]
 
 	@lobbys: {}
+	@invitations: {}
 
-	join: (bot, out, isPublic, from, to, command, params, message) ->
+	join: (bot, out, isPublic, from, to, command, params, message, where) ->
 		player =
 			name: from
 			score: 0
@@ -60,10 +79,12 @@ class hangman
 							lobby.started = yes
 							bot.currentClient.say to, "Game started!"
 							bot.currentClient.say to, lobby.filteredWord()
+							lobby.players = _.shuffle lobby.players
 							lobby?.nextTurn?()
 					), 1000
 		else
 			lobby = hangman.lobbys[to] =
+				admin: player
 				players: [ player ]
 				word: words[_.random 0, words.length - 1]
 				started: no
@@ -88,7 +109,6 @@ class hangman
 							bot.currentClient.say to, "The move of #{@onMove().name} took too long. Moving to next person."
 						@nextTurn()
 					), MOVE_TIME_LIMIT * 1000
-
 			bot.currentClient.say to, "Lobby created by #{from}. Join with @hangman join"
 
 	guess: (bot, out, isPublic, from, to, command, params, message) ->
@@ -108,7 +128,7 @@ class hangman
 								bot.currentClient.say to, lobby.filteredWord()
 								bot.currentClient.say to, "> " + lobby.guesses.join " "
 
-								if _.filter(lobby.guesses, (g) -> _.contains(lobby.word, g)).length is lobby.word.length
+								if _.filter(lobby.guesses, (g) -> _.contains(lobby.word.toUpperCase(), g)).length is lobby.word.length
 									bot.currentClient.say to, "#{from} guessed the right word: #{lobby.word}!"
 									player.score += 3
 									clearTimeout lobby._currentTimeout
@@ -121,7 +141,7 @@ class hangman
 									if (lobby = hangman.lobbys[to])? and (player = _.find(lobby.players, (p) -> p.name is from))?
 										_.remove lobby.players, player
 
-										if lobby.players.length is 1
+										if lobby.players.length < 2
 											clearTimeout lobby._currentTimeout
 											bot.currentClient.say to, "Not enough players left, closing game. Word was: #{lobby.word}"
 											delete hangman.lobbys[to]; lobby = null
@@ -142,6 +162,10 @@ class hangman
 					delete hangman.lobbys[to]; lobby = null
 					return
 
+				else if lobby.word.length isnt guess.length
+					bot.currentClient.say to, "Word isn't the same length as the hidden word. Expecting new guess."
+					return
+
 				else
 					if --player.triesLeft is 0
 						bot.currentClient.say to, "nope. #{from} has lost."
@@ -149,7 +173,7 @@ class hangman
 						if (lobby = hangman.lobbys[to])? and (player = _.find(lobby.players, (p) -> p.name is from))?
 							_.remove lobby.players, player
 
-							if lobby.players.length is 1
+							if lobby.players.length < 2
 								clearTimeout lobby._currentTimeout
 								bot.currentClient.say to, "Not enough players left, closing game. Word was: #{lobby.word}"
 								delete hangman.lobbys[to]; lobby = null
@@ -157,7 +181,7 @@ class hangman
 
 							lobby?.nextTurn?()
 					else
-						bot.currentClient.say to, "nope. #{player.triesLeft} #{if player.triesLeft is 1 then "try" else "tries"} left."
+						bot.currentClient.say to, "nope. #{player.triesLeft} #{if player.triesLeft is 1 then "try" else "tries"} left. Expecting new guess."
 					bot.currentClient.say to, lobby.filteredWord()
 					bot.currentClient.say to, "> " + lobby.guesses.join " "
 			else
@@ -170,7 +194,7 @@ class hangman
 			bot.currentClient.say to, "#{from} left hangman."
 			_.remove lobby.players, player
 
-			if lobby.players.length is 1
+			if lobby.players.length < 2
 				clearTimeout lobby._currentTimeout
 				bot.currentClient.say to, "Not enough players left, closing game. Word was: #{lobby.word}"
 				delete hangman.lobbys[to]; lobby = null
@@ -198,5 +222,34 @@ class hangman
 				bot.currentClient.say to, "Game hasn't started yet."
 		else
 			bot.currentClient.say to, "No game in progress, use @hangman join to create and join a new hangman game."
+
+	kick: (bot, out, isPublic, from, to, command, params, message) ->
+		if (lobby = hangman.lobbys[to])?
+			if lobby.admin.name is from
+				player = _.find lobby.players, (p) -> p.name.toLowerCase() is params[0].toLowerCase()
+
+				if player?
+					bot.currentClient.say to, "#{from} kicked #{player.name} from hangman."
+					_.remove lobby.players, player
+				else
+					bot.currentClient.say to, "No player with the name #{params[0]} found in the lobby."
+			else
+				bot.currentClient.say to, "You're not the admin of this lobby."
+		else
+			bot.currentClient.say to, "No game in progress, use @hangman join to create and join a new hangman game."
+
+	invite: (bot, out, isPublic, from, to, command, params, message) =>
+		name = params[0].toLowerCase()
+		bot.currentClient.notice name, "#{from} invited you to join hangman in #{to}. Join with @hangman join"
+		hangman.invitations[name] = to
+		unless (lobby = hangman.lobbys[to])? and _.find(lobby.players, (p) -> p.name is from)? then @join arguments...
+
+	acceptInvite: (bot, out, isPublic, from, to, command, params, message) ->
+		name = from.toLowerCase()
+		if (val = hangman.invitations[name])?
+			out "You joined the hangman game over at #{val}, now part that channel if you haven't yet!"
+			hangman.invitations[name] = null
+		else
+			out "You aren't invited yet. :("
 
 module.exports = hangman

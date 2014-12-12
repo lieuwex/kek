@@ -11,6 +11,18 @@ class web
 			method: "broadcast"
 			commandLength: 1
 		}
+		{
+			command: /^kek \S+/i
+			when: null
+			method: "info"
+			commandLength: 1
+		}
+		{
+			command: /^kek reloadmodules/i
+			when: null
+			method: "reload"
+			commandLength: 2
+		}
 	]
 
 	constructor: (bot) ->
@@ -28,10 +40,14 @@ class web
 					for channel in client.serverInfo.channels
 						client.say channel, "Broadcast: #{message}"
 
-		app.get "/", (req, res) ->
-			res.send JSON.stringify
+		@info = ->
+			return {
+				version: bot.VERSION
 				servers: ({ url: x.serverInfo.url, port: x.serverInfo.port, channels: x.serverInfo.channels, username: x.serverInfo.username } for x in bot.clients)
 				modules: _.keys(bot.modules)
+			}
+
+		app.get "/", (req, res) => res.send JSON.stringify @info()
 
 		app.post "/tell", (req, res) =>
 			data = ""
@@ -48,11 +64,15 @@ class web
 					if e.message is "nf" then res.status(404).json { error: "Server with url #{server} not found.", success: no }
 					else res.status(500).json { error: e.message, detailed: e, success: no }
 
+		app.post "/exit", -> process.exit()
+
 		@server = app.listen 1337, -> console.log "Module web is loaded at port 1337."
 
-	destruct: (code) -> server.close()
+	destruct: (code) -> @server.close()
 
 	broadcast: (bot, out, isPublic, from, to, command, params, message) =>
+		return unless from is "Lieuwex"
+
 		_params = []
 		singleParams = []
 		inString = no
@@ -80,5 +100,9 @@ class web
 			message = params.join " "
 
 		@tell server, channel, message
+
+	info: (bot, out, isPublic, from, to, command, params, message) =>
+		switch params[0].toLowerCase()
+			when "info" then out JSON.stringify @info()
 
 module.exports = web
