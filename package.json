@@ -1,5 +1,5 @@
 {
-  "name": "kek",
+  "name": "kekbot",
   "version": "0.0.4",
   "description": "A tiny modular IRC bot for Node.js",
   "main": "index.js",
